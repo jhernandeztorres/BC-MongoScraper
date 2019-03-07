@@ -5,9 +5,9 @@ const mongoose = require("mongoose");
 const axios = require("axios");
 const cheerio = require("cheerio");
 
-const db = require("./models");
+// const db = require("./models");
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 const app = express();
 
@@ -18,13 +18,13 @@ app.use(express.urlencoded({
 app.use(express.json());
 app.use(express.static("public"));
 
-// const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
 
-// mongoose.connect(MONGODB_URI);
+mongoose.connect(MONGODB_URI);
 
-mongoose.connect("mongodb://localhost/mongoHeadlines", {
-    useNewUrlParser: true
-});
+// mongoose.connect("mongodb://localhost/mongoHeadlines", {
+//     useNewUrlParser: true
+// });
 
 // Routes
 
