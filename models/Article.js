@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 
 // Using the Schema constructor, create a new UserSchema object
 // This is similar to a Sequelize model
-const ArticleSchema = new Schema({
+let ArticleSchema = new Schema({
     // `title` is required and of type String
     title: {
         type: String,
@@ -15,6 +15,11 @@ const ArticleSchema = new Schema({
     link: {
         type: String,
         required: true
+    },
+    // Boolean to change when an article is saved
+    saved: {
+        type: Boolean,
+        default: false
     },
     // `note` is an object that stores a Note id
     // The ref property links the ObjectId to the Note model

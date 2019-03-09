@@ -1,11 +1,11 @@
 const express = require("express");
 const logger = require("morgan");
 const mongoose = require("mongoose");
-
+const exphbs = require("express-handlebars");
 const axios = require("axios");
 const cheerio = require("cheerio");
 
-// const db = require("./models");
+const db = require("./models");
 
 const PORT = process.env.PORT || 3000;
 
@@ -18,18 +18,36 @@ app.use(express.urlencoded({
 app.use(express.json());
 app.use(express.static("public"));
 
+// Handlebars
+app.engine("handlebars", exphbs({ defaultLayout: "main" }));
+app.set("view engine", "handlebars");
+
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
 
 mongoose.connect(MONGODB_URI);
 
-// mongoose.connect("mongodb://localhost/mongoHeadlines", {
-//     useNewUrlParser: true
-// });
-
 // Routes
 
+// Route for getting all articles from database
+app.get("/", function(req, res) {
+    db.Article.find({saved: false})
+    .then(function(dbArticle) {
+        // console.log('hit article' + dbArticle)
+            res.render("index", {
+                article: dbArticle
+            });
+    })
+    .catch(err=>{
+        console.log(err)
+
+    })
+    // res.render("index");
+})
+
+
+
 // A GET route for scraping the news.ycombinator.com website
-app.get("/scrape", function(req, res) {
+app.get("/scrape", function (req, res) {
     // Grab the body of the site
     axios.get("https://news.ycombinator.com/").then((response) => {
         let $ = cheerio.load(response.data);
@@ -39,16 +57,57 @@ app.get("/scrape", function(req, res) {
             // Save an empty result object
             let result = {};
 
-            // console.log(response.data);
             // Add the summary, href, and text of score
             result.title = $(element).text();
             result.link = $(element).attr("href");
             console.log(result);
-            // console.log(result.link);
-        })
-        res.send("Scrape Complete");
+
+            // Create new Article using the result object
+            db.Article.create(result)
+                .then((dbArticle) => {
+                    console.log(dbArticle);
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        });
     })
 })
+
+// Route for grabbing a specific Article by id, populate it with it's note
+app.get("/articles/:id", (req, res) => {
+    db.Article.findOne({
+            _id: req.params.id
+        })
+        .populate("note")
+        .then((dbArticle) => {
+            res.json(dbArticle);
+        })
+        .catch((err) => {
+            res,
+            json(err);
+        });
+});
+
+// Route for saving/updating an Article's note
+app.post("/articles/:id", (req, res) => {
+    db.Note.create(req.body)
+        .then((dbNote) => {
+            return db.Article.findByIdAndUpdate({
+                _id: req.params.id
+            }, {
+                note: dbNote._id
+            }, {
+                new: true
+            })
+        })
+        .then((dbArticle) => {
+            res.json(dbArticle)
+        })
+        .catch((err) => {
+            res.json(err);
+        });
+});
 
 // Start the server
 app.listen(PORT, function () {
