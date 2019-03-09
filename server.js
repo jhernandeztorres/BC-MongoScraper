@@ -41,7 +41,6 @@ app.get("/", function(req, res) {
         console.log(err)
 
     })
-    // res.render("index");
 })
 
 
@@ -66,6 +65,8 @@ app.get("/scrape", function (req, res) {
             db.Article.create(result)
                 .then((dbArticle) => {
                     console.log(dbArticle);
+                    // res.redirect("/")
+                    
                 })
                 .catch((err) => {
                     console.log(err);
