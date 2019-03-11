@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <a class="navbar-brand" href="#">Y Combinator Scraper</a>
   <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
     <div class="navbar-nav">
@@ -9,11 +9,31 @@
 </nav>
 <br>
 
+<div class="container">
+  <div class="jumbotron">
+    <p class="text-center">Y Combinator Scraper</p>
+  </div>
+</div>
 
-
-br>
-<footer class="footer">
-    <div class="container">
-        <small>Copyright &copy; 2019 Jose Hernandez Torres</small>
+<div class="container">
+  <h3>Saved articles</h3>
+  {{#each article}}
+  <div class="card bg-light mb-3">
+    <div class="card-body">
+      <h5 class="card-title">{{title}}</h5>
+      <a href="{{link}}" class="card-link" target="_blank">View Article</a>
+      <p></p>
+      <a data-articleId={{_id}} class="btn btn-primary unsave-btn">Remove from saved</a>
+      <a data-articleId={{_id}} class="btn btn-primary note-btn">Add note</a>
+      <div class="notes"></div>
     </div>
+  </div>
+  {{/each}}
+</div>
+
+<br>
+<footer class="footer navbar-dark bg-dark">
+  <div class="container text-center">
+    <small style="color: white">Copyright &copy; 2019 Jose Hernandez Torres</small>
+  </div>
 </footer>

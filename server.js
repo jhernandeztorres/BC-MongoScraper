@@ -19,7 +19,9 @@ app.use(express.json());
 app.use(express.static("public"));
 
 // Handlebars
-app.engine("handlebars", exphbs({ defaultLayout: "main" }));
+app.engine("handlebars", exphbs({
+    defaultLayout: "main"
+}));
 app.set("view engine", "handlebars");
 
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
@@ -29,21 +31,20 @@ mongoose.connect(MONGODB_URI);
 // Routes
 
 // Route for getting all articles from database
-app.get("/", function(req, res) {
-    db.Article.find({saved: false})
-    .then(function(dbArticle) {
-        // console.log('hit article' + dbArticle)
+app.get("/", function (req, res) {
+    db.Article.find({
+            saved: false
+        })
+        .then(function (dbArticle) {
             res.render("index", {
                 article: dbArticle
             });
-    })
-    .catch(err=>{
-        console.log(err)
+        })
+        .catch(err => {
+            console.log(err)
 
-    })
+        })
 })
-
-
 
 // A GET route for scraping the news.ycombinator.com website
 app.get("/scrape", function (req, res) {
@@ -66,7 +67,7 @@ app.get("/scrape", function (req, res) {
                 .then((dbArticle) => {
                     console.log(dbArticle);
                     // res.redirect("/")
-                    
+
                 })
                 .catch((err) => {
                     console.log(err);
@@ -75,13 +76,42 @@ app.get("/scrape", function (req, res) {
     })
 })
 
+// Route for getting all articles that are saved
+app.get("/saved", (req, res) => {
+    db.Article.find({
+            saved: true
+        })
+        .then((dbArticle) => {
+            res.render("saved", {
+                article: dbArticle
+            })
+        })
+        .catch((err) => {
+            res.json(err);
+        });
+});
+
+// Route for setting article to saved
+app.put("/saved/:id", (req, res) => {
+    db.Article.findByIdAndUpdate(req.params.id, {
+            $set: req.body
+        }, {
+            new: true
+        }).then((dbArticle) => {
+            res.render("saved", {
+                article: dbArticle
+            });
+        })
+        .catch((err) => {
+            res.json(err);
+        });
+});
+
 // Route for grabbing a specific Article by id, populate it with it's note
 app.get("/articles/:id", (req, res) => {
-    db.Article.findOne({
-            _id: req.params.id
-        })
-        .populate("note")
-        .then((dbArticle) => {
+    db.Article.findOne({_id: req.params.id})
+    .populate("note")
+    .then((dbArticle) => {
             res.json(dbArticle);
         })
         .catch((err) => {
