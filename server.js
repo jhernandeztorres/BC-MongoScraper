@@ -110,13 +110,11 @@ app.put("/saved/:id", (req, res) => {
 // Route for grabbing a specific Article by id, populate it with it's note
 app.get("/articles/:id", (req, res) => {
     db.Article.findOne({_id: req.params.id})
-    .populate("note")
-    .then((dbArticle) => {
+    .populate("note").then((dbArticle) => {
             res.json(dbArticle);
         })
         .catch((err) => {
-            res,
-            json(err);
+            res.json(err);
         });
 });
 
@@ -138,6 +136,16 @@ app.post("/articles/:id", (req, res) => {
         .catch((err) => {
             res.json(err);
         });
+});
+
+// Route for getting all notes for specific article
+app.get("/notes/:id", (req,res) => {
+    db.Note.findById({_id: req.params.id})
+    .populate("note").then((data) => {
+        res.json(data);
+    }).catch((err) => {
+        res.json(err);
+    });
 });
 
 // Start the server
