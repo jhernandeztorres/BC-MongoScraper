@@ -1,5 +1,3 @@
-import { notStrictEqual } from "assert";
-
 $(document).ready(function () {
 
     $(".save-btn").on("click", function (event) {
