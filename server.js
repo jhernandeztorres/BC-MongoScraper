@@ -5,6 +5,8 @@ const exphbs = require("express-handlebars");
 const axios = require("axios");
 const cheerio = require("cheerio");
 
+const ObjectId = require("mongodb").ObjectId
+
 const db = require("./models");
 
 const PORT = process.env.PORT || 3000;
@@ -120,6 +122,7 @@ app.get("/articles/:id", (req, res) => {
 
 // Route for saving/updating an Article's note
 app.post("/articles/:id", (req, res) => {
+    req.body.article_id = req.params.id
     db.Note.create(req.body)
         .then((dbNote) => {
             return db.Article.findByIdAndUpdate({
@@ -140,12 +143,16 @@ app.post("/articles/:id", (req, res) => {
 
 // Route for getting all notes for specific article
 app.get("/notes/:id", (req,res) => {
-    db.Note.findById({_id: req.params.id})
-    .populate("note").then((data) => {
-        res.json(data);
-    }).catch((err) => {
-        res.json(err);
-    });
+    console.log(req.params.id)
+    // db.Note.find({_id: ObjectId(req.params.id)})
+    //     .then((data) => {
+    //         console.log("DATA FOUND", data)
+    //         res.json(data);
+    //     }).catch((err) => {
+    //         res.json(err);
+    //     });
+
+    db.Note.find({article_id: req.params.id}).then(data => res.json(data))
 });
 
 // Start the server

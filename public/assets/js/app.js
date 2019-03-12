@@ -122,13 +122,14 @@ $(document).ready(function () {
         let Id = $(this).attr("data-articleid")
         $.ajax({
             method: "GET",
-            url: "/notes/" + Id,
-            data: {
-                title: note.title,
-                body: note.body
-            }
+            url: "/notes/" + Id
         }).then((data) => {
-
+            console.log("DATA FOR NOTE",data)
+            for(let i = 0; i < data.length; i++){
+            $("#" + Id + "savednotes").append("<h2>" + data[i].title + "</h2>");
+            // Place the body of the note in the body textarea
+            $("#" + Id + "savednotes").append("<h2>" + data[i].body + "</h2>");
+            }
         })
     })
 });
